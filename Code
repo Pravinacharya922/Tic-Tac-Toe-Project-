@@ -1,0 +1,349 @@
+#include <iostream>
+#include <string>
+using namespace std;
+class Player{
+public:
+    string enter;
+
+};
+
+// defining class for node.
+class node {
+public:
+    string board[3][3];
+    node* next;
+    node(string board[3][3]) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                this->board[i][j] = board[i][j];
+            }
+        }
+        next = nullptr;
+    }
+};
+
+// insert element at tail.
+void Insertion(node* &head, string board[3][3]) {
+    node* n = new node(board);
+    if (head == NULL) {
+        head = n;
+        return;
+    }
+    node* temp = head; // assigning new temp to traverse
+    while (temp->next != NULL) { // when it reaches the last element we put n after that
+        temp = temp->next; // going to another node.
+    }
+    temp->next = n;
+}
+// function to display the last board(element of node.);
+void Display(node* head) {
+    node* temp = head;
+    string realBoard[3][3];
+    while (temp != NULL) {
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                realBoard[i][j]= temp->board[i][j]; // replace temp->board with realBoard
+            }
+        }
+        temp = temp->next;
+    }
+    cout << "             " << realBoard[0][0] << "|" << realBoard[0][1] << "|" << realBoard[0][2] << endl;
+    cout << "             --------" << endl;
+    cout << "             " << realBoard[1][0] << "|" << realBoard[1][1] << "|" << realBoard[1][2] << endl;
+    cout << "             --------" << endl;
+    cout << "             " << realBoard[2][0] << "|" << realBoard[2][1] << "|" << realBoard[2][2] << endl;
+    cout << endl;
+
+
+}
+// delete the last element of the node.
+void DeleteLastNode(node* &head) {
+    if (head == NULL) {
+        return;
+    }
+    if (head->next == NULL) { // when there is only one node we delete that one.
+        delete head;
+        head = NULL;
+        return;
+    }
+    node* temp = head;
+    while (temp->next->next != NULL) { // to find the second to last node.
+        temp = temp->next;
+    }
+    delete temp->next;
+    temp->next = NULL;
+}
+// function for valid input check.
+bool validInputCheck(string name){
+    bool check= false;
+    if(name.size() !=2){
+        check = false;
+    }
+    else if((name[0]=='a' || name[0]=='b' || name[0]=='c') &&(name[1]=='1' || name[1]== '2' || name[1]== '3' || name[1]== '4' || name[1]== '5' || name[1]== '6' || name[1]== '7' || name[1]== '8' || name[1]== '9' )){
+        check= true;
+    }
+    return check;
+}
+// function to print information about Y.
+void PrintY(int remainingYY, int remainingY, int remainingy ) {
+    cout << "a. YY  " << remainingYY << " remain." << endl;
+    cout << "b. Y   " << remainingY << " remain." << endl;
+    cout << "c. y   " << remainingy << " remain." << endl;
+    cout << "q to exit." << endl;
+    cout << endl;
+    cout << "It is yellow's turn." << endl;
+    cout << "Choose action and location, for example a2: ";
+    cout << endl << endl;
+}
+// function to print information about R.
+void PrintR(int remainingRR, int remainingR, int remainingr) {
+    cout << "a. RR  " << remainingRR << " remain." << endl;
+    cout << "b. R   " << remainingR << " remain." << endl;
+    cout << "c. r   " << remainingr << " remain." << endl;
+    cout << "q to exit." << endl;
+    cout << endl;
+    cout << "It is red's turn." << endl;
+    cout << "Choose action and location, for example a2: ";
+    cout << endl << endl;
+}
+// function to make the row and column for the board according to input.
+void ModifyValue(int &row, int & column){
+    if (column==1|| column ==2 || column == 3){
+        column= column - 1;
+        row = 0;
+    }else if(column==4|| column ==5 || column == 6){
+        column= column % 4;
+        row = 1;
+    }else if (column==7|| column ==8 || column == 9){
+        column= column % 7;
+        row = 2;
+    }
+}
+// function to modify input to valid player symbol for Y.
+string PlaceValueY(char sizeDepict, int column){
+    string now;
+    if (sizeDepict == 'a'){
+        now = "YY";
+    } else if(sizeDepict == 'b'){
+        now = "Y" + to_string(column);
+    } else if(sizeDepict == 'c'){
+        now = "y" + to_string(column);
+    }
+    return now;
+}
+// function to modify input to valid player symbol for R.
+string PlaceValueR(char sizeDepict, int column){
+    string now;
+    if (sizeDepict == 'a'){
+        now = "RR";
+    } else if(sizeDepict == 'b'){
+        now = "R" + to_string(column);
+    } else if(sizeDepict == 'c'){
+        now = "r" + to_string(column);
+    }
+    return now;
+}
+void printInvalidMoveYellow(){
+    cout << "Invalid move. Try again.";
+    cout << endl << endl;
+    cout << "It is yellow's turn." << endl;
+    cout << "Choose action and location, for example a2: ";
+}
+void printInvalidMoveRed(){
+    cout << "Invalid move. Try again.";
+    cout << endl<< endl;
+    cout << "It is red's turn." << endl;
+    cout << "Choose action and location, for example a2: ";
+}
+
+
+int main() {
+    string board[][3] = {{" 1", " 2", " 3"}, {" 4", " 5", " 6"}, {" 7", " 8", " 9"}};
+    string board1[][3] = {{" 1", " 2", " 3"}, {" 4", " 5", " 6"}, {" 7", " 8", " 9"}};\
+    int remainingYY = 2;
+    int remainingY = 2;
+    int remainingy = 2;
+    int remainingRR = 2;
+    int remainingR = 2;
+    int remainingr = 2;
+    int column, column1, row;
+    row = 0;
+    char firstIndex;
+    string yellowInput, redInput, newVal;
+    bool isValid;
+
+    node* head = NULL;
+    Insertion(head, board);
+    Display(head);
+    for(int i = 0; i < 6; i ++) {
+        PrintY(remainingYY, remainingY, remainingy);
+        cin >> yellowInput;
+        if (yellowInput == "q") {
+            break;
+        }
+        if (yellowInput == "u") {
+            DeleteLastNode(head);
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    board[i][j] = head->board[i][j];
+                }
+            }
+            if (redInput[0] == 'a') {
+                remainingRR++;
+            } else if (redInput[0] == 'b') {
+                remainingR++;
+            } else if (redInput[0] == 'c') {
+                remainingr++;
+            }
+
+        } else {
+            isValid = validInputCheck(yellowInput);
+            while (!isValid) {
+                printInvalidMoveYellow();
+                cin >> yellowInput;
+                isValid = validInputCheck(yellowInput);
+            }
+            column = stoi(string(1, yellowInput[1]));
+            column1 = column;
+            firstIndex = yellowInput[0];
+            ModifyValue(row, column1);
+            newVal = PlaceValueY(firstIndex, column);
+            if ((remainingYY == 0 && newVal == "YY") || (board[row][column1] == "YY" && newVal == "YY") ||
+                board[row][column1] == "RR" && newVal == "YY") {
+                printInvalidMoveYellow();
+                cin >> yellowInput;
+                if (yellowInput == "q") {
+                    break;
+                }
+                if (yellowInput == "u") {
+                    DeleteLastNode(head);
+                    if (redInput[0] == 'a') {
+                        remainingRR++;
+                    } else if (redInput[0] == 'b') {
+                        remainingR++;
+                    } else if (redInput[0] == 'c') {
+                        remainingr++;
+                    }
+
+                } else {
+                    isValid = validInputCheck(yellowInput);
+                    while (!isValid) {
+                        printInvalidMoveYellow();
+                        cin >> yellowInput;
+                        isValid = validInputCheck(yellowInput);
+                    }
+                    column = stoi(string(1, yellowInput[1]));
+                    column1 = column;
+                    firstIndex = yellowInput[0];
+                    ModifyValue(row, column1);
+                    newVal = PlaceValueY(firstIndex, column);
+                    board[row][column1] = newVal;
+                    if (yellowInput[0] == 'a') {
+                        remainingYY--;
+                    } else if (yellowInput[0] == 'b') {
+                        remainingY--;
+                    } else if (yellowInput[0] == 'c') {
+                        remainingy--;
+                    }
+                    Insertion(head, board);
+                }
+
+            } else {
+                column = stoi(string(1, yellowInput[1]));
+                column1 = column;
+                firstIndex = yellowInput[0];
+                ModifyValue(row, column1);
+                newVal = PlaceValueY(firstIndex, column);
+                board[row][column1] = newVal;
+                if (yellowInput[0] == 'a') {
+                    remainingYY--;
+                } else if (yellowInput[0] == 'b') {
+                    remainingY--;
+                } else if (yellowInput[0] == 'c') {
+                    remainingy--;
+                }
+                Insertion(head, board);
+
+
+            }
+        }
+        cout << endl;
+        Display(head);
+
+
+
+            // part for Red gameplay.
+
+        PrintR(remainingRR, remainingR, remainingr);
+        cin >> redInput;
+        if (redInput == "q") {
+            break;
+        }
+        if (redInput == "u") {
+            DeleteLastNode(head);
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    board[i][j] = head->board[i][j];
+                }
+            }
+            if (yellowInput[0] == 'a' || yellowInput == "u") {
+                remainingYY++;
+            } else if (yellowInput[0] == 'b') {
+                remainingY++;
+            } else if (yellowInput[0] == 'c') {
+                remainingy++;
+            }
+
+        } else {
+            isValid = validInputCheck(redInput);
+            while (!isValid) {
+                printInvalidMoveRed();
+                cin >> redInput;
+                isValid = validInputCheck(redInput);
+            }
+            column = stoi(string(1, redInput[1]));
+            column1 = column;
+            firstIndex = redInput[0];
+            ModifyValue(row, column1);
+            newVal = PlaceValueR(firstIndex, column);
+            if (board[row][column1] == "YY" && newVal[0] == 'R') {
+                printInvalidMoveRed();
+                cin >> redInput;
+                if (redInput == "q") {
+                    break;
+                }
+                isValid = validInputCheck(redInput);
+                while (!isValid) {
+                    printInvalidMoveRed();
+                    cin >> redInput;
+                    isValid = validInputCheck(redInput);
+                }
+                column = stoi(string(1, redInput[1]));
+                column1 = column; // Keep the original column position
+                firstIndex = redInput[0];
+                ModifyValue(row, column1);
+                newVal = PlaceValueR(firstIndex, column);
+                column = stoi(string(1, redInput[1]));
+                column1 = column; // Keep the original column position
+                firstIndex = redInput[0];
+                ModifyValue(row, column1);
+                newVal = PlaceValueR(firstIndex, column);
+            }
+            board[row][column1] = newVal;
+            if (redInput[0] == 'a') {
+                remainingRR--;
+            } else if (redInput[0] == 'b') {
+                remainingR--;
+            } else if (redInput[0] == 'c') {
+                remainingr--;
+            }
+            Insertion(head, board);
+        }
+        cout << endl;
+        Display(head);
+
+
+    }
+
+
+}
